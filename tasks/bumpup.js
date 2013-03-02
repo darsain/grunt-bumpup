@@ -69,7 +69,7 @@ module.exports = function(grunt) {
 		// Get configuration and set the options
 		var taskConfig = grunt.config('bumpup');
 		var config = ['string', 'array'].indexOf(type(taskConfig)) !== -1 ? { files: taskConfig } : taskConfig;
-		var files  = type(config.files) === 'array' ? config.files : [config.files];
+		var files  = type(config.files) === 'array' ? config.files : [config.file || config.files];
 		var o      = grunt.util._.extend({
 			dateformat: 'YYYY-MM-DD HH:mm:ss Z',
 			normalize: true
