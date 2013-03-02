@@ -24,9 +24,12 @@ module.exports = function(grunt) {
 		bumpup: {
 			options: {
 				dateformat: 'YYYY-MM-DD HH:mm',
-				normalize: false
+				normalize: false,
+				timestamp: function () {
+					return +new Date();
+				}
 			},
-			files: ['test/v.json', 'test/d.json', 'test/vd.json']
+			files: ['test/v.json', 'test/d.json', 'test/vd.json'],
 		}
 	});
 
