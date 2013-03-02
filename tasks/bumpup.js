@@ -43,11 +43,12 @@ function type(value) {
 	return Object.prototype.toString.call(value).match(/^\[object ([a-z]+)\]$/i)[1].toLowerCase();
 }
 
+// Export the module
 module.exports = function(grunt) {
 	// Error handler
 	function failed(error, message) {
 		if (error) {
-			grunt.verbose.error(error);
+			grunt.log.error(error);
 		}
 		grunt.fail.warn(message || 'Tagrelease task failed.');
 	}
@@ -73,7 +74,6 @@ module.exports = function(grunt) {
 			dateformat: 'YYYY-MM-DD HH:mm:ss Z',
 			normalize: true
 		}, config.options || {});
-		var newDate = moment.utc().format(o.dateformat);
 		var normVersion;
 
 		if (!files.length) {
@@ -81,11 +81,32 @@ module.exports = function(grunt) {
 			return;
 		}
 
+		// Create an object of property setters
+		var setters = {
+			version: function (old, type) {
+				var oldVersion = semver.valid(old);
+				if (!oldVersion) {
+					grunt.log.warn('Version "' + old + '" is not a valid semantic version.');
+					return;
+				} else {
+					return semver.inc(oldVersion, type);
+				}
+			},
+			date: function (old, format) {
+				return moment.utc().format(format);
+			},
+		};
+		Object.keys(o).forEach(function (key) {
+			if (typeof o[key] === 'function') {
+				setters[key] = o[key];
+			}
+		});
+
 		// Bumpup the files
 		files.filter(function (filepath) {
 			// Remove nonexistent files.
 			if (!grunt.file.exists(filepath)) {
-				grunt.log.warn('File "' + filepath + '" not found.');
+				grunt.log.warn('File "' + filepath.cyan + '" not found.');
 				return false;
 			} else {
 				return true;
@@ -95,31 +116,37 @@ module.exports = function(grunt) {
 				var file = grunt.file.read(filepath);
 				var meta = JSON.parse(file);
 				var indentation = detectIndentation(file);
-				var newVersion;
 
-				// Update version property
-				if (typeof meta.version !== 'undefined') {
-					var oldVersion = semver.valid(meta.version);
-					if (!oldVersion && !o.normalize || !oldVersion && o.normalize && !normVersion) {
-						grunt.log.warn('Version in "' + filepath + '" is not a valid semantic version.');
-					} else {
-						if (!normVersion) {
-							normVersion = semver.inc(oldVersion, release);
-						}
-						newVersion = o.normalize ? normVersion : semver.inc(oldVersion, release);
+				grunt.log.verbose.writeln('Bumping "' + filepath.cyan + '":');
+
+				// Update properties with defined setters
+				Object.keys(setters).forEach(function (key) {
+					if (!Object.prototype.hasOwnProperty.call(meta, key)) {
+						return;
 					}
 
-					if (newVersion) {
-						grunt.log.writeln('Bumping "' + filepath + '" version to: ' + newVersion);
-						meta.version = newVersion;
-					}
-				}
+					var newValue;
+					switch (key) {
+						case 'version':
+							if (o.normalize && normVersion) {
+								newValue = normVersion;
+							} else {
+								normVersion = newValue = setters[key](meta.version, release);
+							}
+							break;
 
-				// Update date property
-				if (typeof meta.date !== 'undefined') {
-					grunt.log.writeln('Bumping "' + filepath + '" date to: ' + newDate);
-					meta.date = newDate;
-				}
+						case 'date':
+							newValue = setters[key](meta[key], o.dateformat);
+							break;
+
+						default:
+							newValue = setters[key](meta[key]);
+					}
+					if (typeof newValue !== 'undefined') {
+						meta[key] = newValue;
+						grunt.log.verbose.writeln(grunt.util.repeat(12 - key.length, ' ') + key + ' : ' + newValue);
+					}
+				});
 
 				// Stringify new metafile and save
 				if (!grunt.file.write(filepath, JSON.stringify(meta, null, indentation))) {
@@ -129,5 +156,7 @@ module.exports = function(grunt) {
 				failed(error, 'Bumpup failed.');
 			}
 		}, this);
+
+		grunt.log.writeln('Bumped to: ' + normVersion);
 	});
 };
