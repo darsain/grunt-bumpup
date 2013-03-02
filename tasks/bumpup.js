@@ -20,19 +20,13 @@ var moment = require('moment');
 function detectIndentation(string) {
 	var tabs   = string.match(/^[\t]+/gm) || [];
 	var spaces = string.match(/^[ ]+/gm) || [];
-	var none   = string.match(/^("|\{|\})/gm) || [];
-
-	// Return empty string if thats the case
-	if (none.length > tabs.length && none.length > spaces.length) {
-		return '';
-	}
 
 	// Pick the smalles indentation level of a prevalent type
-	var prevalent = tabs.length > spaces.length ? tabs : spaces;
+	var prevalent = tabs.length >= spaces.length ? tabs : spaces;
 	var indentation;
-	for (var p = 0, pl = prevalent.length; p < pl; p++) {
-		if (!indentation || prevalent[p].length < indentation.length) {
-			indentation = prevalent[p];
+	for (var i = 0, il = prevalent.length; i < il; i++) {
+		if (!indentation || prevalent[i].length < indentation.length) {
+			indentation = prevalent[i];
 		}
 	}
 	return indentation;
