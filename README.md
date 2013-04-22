@@ -244,3 +244,43 @@ And now you can call it from CLI like this:
 ```shell
 grunt release:minor
 ```
+
+#### Updating config properties
+
+After bumpup executes, it updates the JSON properties that other tasks in queue running after it might want to use. For
+example, if you have a `pkg` config property for easy access:
+
+```js
+grunt.initConfig({
+	pkg: grunt.file.readJSON('package.json')
+});
+```
+
+And you want to execute a task that uses this property immediately after bumpup, you have to tell grunt that
+this property has changed. You can update the property like this:
+
+```js
+grunt.config.set('pkg', grunt.file.readJSON('package.json'));
+```
+
+But this has to be done in the grunt task queue right after the bumpup, otherwise it won't have any effect, as grunt
+tasks are asynchronous. The solution is to place it into an alias task, add to queue right after bumpup. This is the
+final release task using updating `pkg` property:
+
+```js
+// Task for updating the pkg config property. Needs to be run after
+// bumpup so the next tasks in queue can work with updated values.
+grunt.registerTask('updatePkg', function () {
+	grunt.config.set('pkg', grunt.file.readJSON('component.json'));
+});
+
+// Release task.
+grunt.registerTask('release', function (type) {
+	type = type ? type : 'patch';
+	grunt.task.run('jshint');
+	grunt.task.run('bumpup:' + type);
+	grunt.task.run('updatePkg');
+	grunt.task.run('build');
+	grunt.task.run('tagrelease');
+});
+```
