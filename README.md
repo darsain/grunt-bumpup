@@ -284,22 +284,21 @@ grunt.initConfig({
 });
 ```
 
-And you want to execute a task that uses this property immediately after bumpup, you have to tell grunt that
-this property has changed. You can update the property like this:
+And you want to execute a task that uses this property immediately after it was bumped up, you have to tell Grunt that
+this property has been changed. bumpup does this automatically when you set up the `updateProps` option. When set up,
+this option will update properties that have just been bumped up. The example config than looks like this:
 
 ```js
-grunt.config.set('pkg', grunt.file.readJSON('package.json'));
-```
-
-But this has to be done in the grunt task queue right after the bumpup, otherwise it won't have any effect, as grunt
-tasks are asynchronous. The solution is to place it into an alias task, add to queue right after bumpup. This is the
-final release task using updating `pkg` property:
-
-```js
-// Task for updating the pkg config property. Needs to be run after
-// bumpup so the next tasks in queue can work with updated values.
-grunt.registerTask('updatePkg', function () {
-	grunt.config.set('pkg', grunt.file.readJSON('component.json'));
+grunt.initConfig({
+	pkg: grunt.file.readJSON('package.json'),
+	bumpup: {
+		options: {
+			updateProps: {
+				pkg: 'package.json'
+			}
+		},
+		file: 'package.json'
+	}
 });
 
 // Release task.
@@ -307,7 +306,6 @@ grunt.registerTask('release', function (type) {
 	type = type ? type : 'patch';
 	grunt.task.run('jshint');
 	grunt.task.run('bumpup:' + type);
-	grunt.task.run('updatePkg');
 	grunt.task.run('build');
 	grunt.task.run('tagrelease');
 });
