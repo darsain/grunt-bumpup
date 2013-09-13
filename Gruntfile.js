@@ -10,6 +10,7 @@
 module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
+		pkg: grunt.file.readJSON('test/v.json'),
 		jshint: {
 			options: {
 				jshintrc: '.jshintrc',
@@ -27,6 +28,9 @@ module.exports = function(grunt) {
 				normalize: false,
 				timestamp: function () {
 					return +new Date();
+				},
+				updateProps: {
+					pkg: 'test/v.json'
 				}
 			},
 			files: ['test/v.json', 'test/d.json', 'test/vd.json'],
@@ -42,7 +46,14 @@ module.exports = function(grunt) {
 	// Registering the testing task.
 	grunt.registerTask('test', function (type) {
 		type = type ? type : 'patch';
+		grunt.task.run('logver');
 		grunt.task.run('bumpup:' + type);
+		grunt.task.run('logver');
+	});
+
+	// Registering the testing task.
+	grunt.registerTask('logver', function () {
+		grunt.log.writeln('version: ' + grunt.config.process('<%= pkg.version %>'));
 	});
 
 	// By default, lint and run all tests.
