@@ -143,11 +143,11 @@ module.exports = function(grunt) {
 							break;
 
 						case 'date':
-							newValue = setters[key](meta[key], o.dateformat);
+							newValue = setters[key](meta[key], release, o.dateformat);
 							break;
 
 						default:
-							newValue = setters[key](meta[key]);
+							newValue = setters[key](meta[key], release);
 					}
 					if (typeof newValue !== 'undefined') {
 						meta[key] = newValue;
