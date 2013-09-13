@@ -95,6 +95,31 @@ grunt.initConfig({
 
 ## Options
 
+#### options.updateProps
+Type: `Object`
+Default: `{}`
+
+Map of grunt config property names that should be updated after bumping.
+
+Usage: If you have a `pkg` property from `package.json`, and you bumpup it up, you need to tell that to grunt so the
+next tasks in queue can use the updated data.
+
+Example: Tell bumpup to update the `pkg` config property when bumping the `package.json` file.
+
+```js
+grunt.initConfig({
+	pkg: grunt.file.readJSON('package.json'),
+	bumpup: {
+		options: {
+			updateProps: {
+				pkg: 'package.json'
+			}
+		},
+		file: 'package.json'
+	}
+});
+```
+
 #### options.normalize
 Type: `Boolean`
 Default: `true`
@@ -136,7 +161,7 @@ be updated. For example, this will update the `timestamp` property inside `packa
 grunt.initConfig({
 	bumpup: {
 		options: {
-			timestamp: function (old) {
+			timestamp: function (old, type) {
 				return +new Date();
 			}
 		},
@@ -145,15 +170,14 @@ grunt.initConfig({
 });
 ```
 
-You can also override the default property setters for `version` and `date` properties if you want some more control,
-or, lets say in a `version` property, when you are not using a Semantic Versioning, and need to define a custom version
-bumping style.
+You can also override the default setters for `version` and `date` properties if you want some more control, or
+other behavior than the default one.
 
 ### Setter arguments
 
-All setters receive the old property value as a first argument.
+All setters receive the old property, and bump type (`major`, `minor`, `patch`, or `prerelease`) as a first and second arguments.
 
-The `version` setter receives the bump type from the CLI `bumpup:type` as a 2nd argument. Example:
+Example:
 
 ```js
 grunt.initConfig({
@@ -168,13 +192,13 @@ grunt.initConfig({
 });
 ```
 
-The `date` setter receives the `option.dateformat` as a 2nd argument.
+The `date` setter also receives the `option.dateformat` as a 2nd argument.
 
 ```js
 grunt.initConfig({
 	bumpup: {
 		options: {
-			date: function (old, dateformat) {
+			date: function (old, type, dateformat) {
 				return moment.utc().format(dateformat);
 			}
 		},
@@ -201,7 +225,7 @@ The default `version` setter accepts these types:
 - **major**: Will bump the major part of a version, resetting minor, patch, and build to 0.
 - **minor**: Will bump the minor part of a version, resetting patch, and build to 0.
 - **patch**: Will bump the patch part of a version, resetting build to 0.
-- **build**: Will bump the build part of a version.
+- **prerelease**: Will bump the build part of a version.
 
 Version format: `major.minor.patch-build`.
 
@@ -247,8 +271,8 @@ grunt release:minor
 
 #### Updating config properties
 
-After bumpup executes, it updates the JSON properties that other tasks in queue running after it might want to use. For
-example, if you have a `pkg` config property for easy access:
+After bumpup executes, it updates the JSON properties that next tasks in queue might want to use.
+For example, if you have a `pkg` config property for easy access:
 
 ```js
 grunt.initConfig({
