@@ -1,4 +1,4 @@
-/*
+/**
  * grunt-bumpup
  * https://github.com/Darsain/grunt-bumpup
  *
@@ -21,7 +21,7 @@ function detectIndentation(string) {
 	var tabs   = string.match(/^[\t]+/gm) || [];
 	var spaces = string.match(/^[ ]+/gm) || [];
 
-	// Pick the smalles indentation level of a prevalent type
+	// Pick the smallest indentation level of a prevalent type
 	var prevalent = tabs.length >= spaces.length ? tabs : spaces;
 	var indentation;
 	for (var i = 0, il = prevalent.length; i < il; i++) {
@@ -69,10 +69,11 @@ module.exports = function(grunt) {
 		// Get configuration and set the options
 		var taskConfig = grunt.config('bumpup');
 		var config = ['string', 'array'].indexOf(type(taskConfig)) !== -1 ? { files: taskConfig } : taskConfig;
-		var files  = type(config.files) === 'array' ? config.files : [config.file || config.files];
-		var o      = grunt.util._.extend({
+		var files = type(config.files) === 'array' ? config.files : [config.file || config.files];
+		var o = grunt.util._.extend({
 			dateformat: 'YYYY-MM-DD HH:mm:ss Z',
-			normalize: true
+			normalize: true,
+			updateProps: {}
 		}, config.options || {});
 		var normVersion;
 
@@ -100,6 +101,12 @@ module.exports = function(grunt) {
 			if (typeof o[key] === 'function') {
 				setters[key] = o[key];
 			}
+		});
+
+		// Flip updateProps map for easier usage
+		var updatePropsMap = {};
+		Object.keys(o.updateProps).forEach(function (key) {
+			updatePropsMap[o.updateProps[key]] = key;
 		});
 
 		// Bumpup the files
@@ -151,6 +158,11 @@ module.exports = function(grunt) {
 				// Stringify new metafile and save
 				if (!grunt.file.write(filepath, JSON.stringify(meta, null, indentation))) {
 					grunt.log.warn('Couldn\'t write to "' + filepath + '"');
+				}
+
+				// Update config property
+				if (updatePropsMap[filepath]) {
+					grunt.config.set(updatePropsMap[filepath], meta);
 				}
 			} catch (error) {
 				failed(error, 'Bumpup failed.');
