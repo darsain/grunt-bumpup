@@ -234,10 +234,10 @@ The default `version` setter accepts these types:
 Version format: `major.minor.patch-build`.
 
 The build part is adjusted only when present. If you have a `1.0.0` version, the `-build` part won't be appended unless
-already present, or you've called the task with `build` argument:
+already present, or you've called the task with `prerelease` argument:
 
 ```shell
-grunt bumpup:build
+grunt bumpup:prerelease
 ```
 
 ## Usage Examples
