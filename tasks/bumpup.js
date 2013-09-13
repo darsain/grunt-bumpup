@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 		if (typeof release === 'string') {
 			release = release.toLowerCase();
 			if (!/^(major|minor|patch|prerelease)$/i.test(release)) {
-				failed(null, '"' + release + '" is not a valid release type: major, minor, patch, or build.');
+				failed(null, '"' + release + '" is not a valid release type: major, minor, patch, or prerelease.');
 				return;
 			}
 		} else {

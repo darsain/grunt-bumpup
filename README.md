@@ -226,18 +226,18 @@ grunt bumpup:type
 
 The default `version` setter accepts these types:
 
-- **major**: Will bump the major part of a version, resetting minor, patch, and build to 0.
-- **minor**: Will bump the minor part of a version, resetting patch, and build to 0.
-- **patch**: Will bump the patch part of a version, resetting build to 0.
-- **prerelease**: Will bump the build part of a version.
+- **major**: Will bump the major part of a version, resetting minor, patch, and prerelease to 0.
+- **minor**: Will bump the minor part of a version, resetting patch, and prerelease to 0.
+- **patch**: Will bump the patch part of a version, resetting prerelease to 0.
+- **prerelease**: Will bump the prerelease part of a version.
 
-Version format: `major.minor.patch-build`.
+Version format: `major.minor.patch-prerelease`.
 
-The build part is adjusted only when present. If you have a `1.0.0` version, the `-build` part won't be appended unless
-already present, or you've called the task with `build` argument:
+The prerelease part is adjusted only when present. If you have a `1.0.0` version, the `-prerelease` part won't be appended unless
+already present, or you've called the task with `prerelease` argument:
 
 ```shell
-grunt bumpup:build
+grunt bumpup:prerelease
 ```
 
 ## Usage Examples
