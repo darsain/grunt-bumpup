@@ -93,7 +93,7 @@ module.exports = function(grunt) {
 					return semver.inc(oldVersion, type);
 				}
 			},
-			date: function (old, format) {
+			date: function (old, type, format) {
 				return moment.utc().format(format);
 			},
 		};
