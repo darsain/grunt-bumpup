@@ -139,7 +139,7 @@ module.exports = function(grunt) {
 
 					if (newValue != null) {
 						meta[key] = newValue;
-						grunt.log.verbose.writeln(grunt.util.repeat(12 - key.length, ' ') + key + ' : ' + newValue);
+						grunt.log.verbose.writeln(grunt.util.repeat(Math.max(16 - key.length, 0), ' ') + key + ' : ' + newValue);
 					}
 				});
 
