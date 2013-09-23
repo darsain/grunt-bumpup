@@ -54,16 +54,16 @@ module.exports = function(grunt) {
 	}
 
 	// Task definition
-	grunt.registerTask('bumpup', 'Bumping up version & date properties.', function (release) {
+	grunt.registerTask('bumpup', 'Bumping up version & date properties.', function (releaseType) {
 		// Normalize the release type
-		if (typeof release === 'string') {
-			release = release.toLowerCase();
-			if (!/^(major|minor|patch|prerelease)$/i.test(release)) {
-				failed(null, '"' + release + '" is not a valid release type: major, minor, patch, or prerelease.');
+		if (typeof releaseType === 'string') {
+			releaseType = releaseType.toLowerCase();
+			if (!/^(major|minor|patch|prerelease)$/i.test(releaseType)) {
+				failed(null, '"' + releaseType + '" is not a valid release type: major, minor, patch, or prerelease.');
 				return;
 			}
 		} else {
-			release = 'patch';
+			releaseType = 'patch';
 		}
 
 		// Get configuration and set the options
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
 			normalize: true,
 			updateProps: {}
 		}, config.options || {});
-		var normVersion;
+		var norm = {};
 
 		if (!files.length) {
 			grunt.log.warn('Nothing to bump up.');
@@ -93,14 +93,12 @@ module.exports = function(grunt) {
 					return semver.inc(oldVersion, type);
 				}
 			},
-			date: function (old, type, format) {
-				return moment.utc().format(format);
+			date: function (old, type, o) {
+				return moment.utc().format(o.dateformat);
 			},
 		};
-		Object.keys(o).forEach(function (key) {
-			if (typeof o[key] === 'function') {
-				setters[key] = o[key];
-			}
+		Object.keys(config.setters || {}).forEach(function (key) {
+			setters[key] = config.setters[key];
 		});
 
 		// Flip updateProps map for easier usage
@@ -133,23 +131,13 @@ module.exports = function(grunt) {
 					}
 
 					var newValue;
-					switch (key) {
-						case 'version':
-							if (o.normalize && normVersion) {
-								newValue = normVersion;
-							} else {
-								normVersion = newValue = setters[key](meta.version, release);
-							}
-							break;
-
-						case 'date':
-							newValue = setters[key](meta[key], release, o.dateformat);
-							break;
-
-						default:
-							newValue = setters[key](meta[key], release);
+					if (o.normalize && norm[key] != null) {
+						newValue = norm[key];
+					} else {
+						norm[key] = newValue = setters[key](meta[key], releaseType, o);
 					}
-					if (typeof newValue !== 'undefined') {
+
+					if (newValue != null) {
 						meta[key] = newValue;
 						grunt.log.verbose.writeln(grunt.util.repeat(12 - key.length, ' ') + key + ' : ' + newValue);
 					}
@@ -169,6 +157,6 @@ module.exports = function(grunt) {
 			}
 		}, this);
 
-		grunt.log.writeln('Bumped to: ' + normVersion);
+		grunt.log.writeln('Bumped to: ' + norm.version);
 	});
 };
