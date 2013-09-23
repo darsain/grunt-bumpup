@@ -1,10 +1,9 @@
-# grunt-bumpup
+# grunt-bumpup [![NPM version](https://badge.fury.io/js/grunt-bumpup.png)](https://npmjs.org/package/grunt-bumpup)
 
 Updates the `version`, `date`, and other properties in your JSON files.
 
-The properties are updated only when already present in the original JSON file.
-
-The plugin also detects and preserves the original indentation style.
+The properties are updated only when already present in the original JSON file. Plugin also detects and preserves the
+original indentation style.
 
 This is a [Grunt](http://gruntjs.com/) 0.4 plugin. If you haven't used [Grunt](http://gruntjs.com/) before, be sure to
 check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a
@@ -22,7 +21,7 @@ Use npm to install and save the plugin into `devDependencies`.
 npm install grunt-bumpup --save-dev
 ```
 
-Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
+Once the plugin has been installed, it can be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
 grunt.loadNpmTasks('grunt-bumpup');
@@ -41,6 +40,9 @@ grunt.initConfig({
 	bumpup: {
 		options: {
 			// Options go here.
+		},
+		setters: {
+			// Custom setters go here.
 		},
 		files: [
 			// JSON files go here.
@@ -83,7 +85,7 @@ grunt.initConfig({
 });
 ```
 
-Custom options:
+Custom options and setters:
 
 ```js
 grunt.initConfig({
@@ -91,6 +93,16 @@ grunt.initConfig({
 		options: {
 			dateformat: 'YYYY-MM-DD HH:mm',
 			normalize: false
+		},
+		setters: {
+			// Overrides version setter
+			version: function (old, releaseType, options) {
+				return 'proprietary version';
+			},
+			// Adds a new setter for `timestamp` property
+			timestamp: function (old, releaseType, options) {
+				return +new Date();
+			},
 		},
 		files: ['package.json', 'component.json']
 	}
@@ -105,8 +117,8 @@ Default: `{}`
 
 Map of grunt config property names that should be updated after bumping.
 
-Usage: If you have a `pkg` property from `package.json`, and you bumpup it up, you need to tell that to grunt so the
-next tasks in queue can use the updated data.
+Usage: If you have a `pkg` convenience property from `package.json`, and you bump up something inside it, you need to
+tell that to grunt so the next tasks in queue can use the updated data.
 
 Example: Tell bumpup to update the `pkg` config property when bumping the `package.json` file.
 
@@ -135,8 +147,9 @@ files is taken from the first file passed into the files array.
 Type: `String`
 Default: `YYYY-MM-DD HH:mm:ss Z`
 
-A date format string used by [moment.js'](http://momentjs.com) `.format()` method. To see all available format tokens,
-read the [moment.js' format documentation](http://momentjs.com/docs/#/displaying/format/).
+A date format string used by [moment.js'](http://momentjs.com) `.format()` method, which is in turn used in `date`
+property setter. To see all available format tokens, read the
+[moment.js' format documentation](http://momentjs.com/docs/#/displaying/format/).
 
 Following is the list of valid moment.js ISO-8601 (computer and human readable) date formats.
 
@@ -158,14 +171,14 @@ The dates are set in the UTC timezone, so including the Z token is recommended.
 
 ## Custom setters
 
-You can define your own property setters by passing them as a function in options object as a property name that should
-be updated. For example, this will update the `timestamp` property inside `package.json`:
+You can define your own property setters by passing them as functions into `setters` object. For example, this will
+update the `timestamp` property inside `package.json`:
 
 ```js
 grunt.initConfig({
 	bumpup: {
-		options: {
-			timestamp: function (old, type) {
+		setters: {
+			timestamp: function (oldTimestamp, releaseType, options) {
 				return +new Date();
 			}
 		},
@@ -175,35 +188,27 @@ grunt.initConfig({
 ```
 
 You can also override the default setters for `version` and `date` properties if you want some more control, or
-other behavior than the default one.
+other than default behavior.
 
 ### Setter arguments
 
-All setters receive the old property, and bump type (`major`, `minor`, `patch`, or `prerelease`) as a first and second arguments.
+All setters receive the same 3 arguments:
 
-Example:
+- **1st** *old* Old property value.
+- **2nd** *releaseType* Release type. Can be `major`, `minor`, `patch`, or `prerelease`.
+- **3rd** *options* Options object, extended with default values.
 
-```js
-grunt.initConfig({
-	bumpup: {
-		options: {
-			version: function (old, type) {
-				return newVersion; // Bump based on a `type` argument
-			}
-		},
-		file: 'package.json'
-	}
-});
-```
-
-The `date` setter also receives the `option.dateformat` as a 2nd argument.
+Example showcasing simplified build in `version` & `date` property setters:
 
 ```js
 grunt.initConfig({
 	bumpup: {
-		options: {
-			date: function (old, type, dateformat) {
-				return moment.utc().format(dateformat);
+		setters: {
+			version: function (oldVersion, releaseType, options) {
+				return semver.inc(oldVersion, releaseType);
+			},
+			date: function (oldDate, releaseType, options) {
+				return moment.utc().format(options.dateformat);
 			}
 		},
 		file: 'package.json'
@@ -224,12 +229,12 @@ You call this task from the CLI with one argument, specifying the release type:
 grunt bumpup:type
 ```
 
-The default `version` setter accepts these types:
+Available release types are:
 
-- **major**: Will bump the major part of a version, resetting minor, patch, and prerelease to 0.
-- **minor**: Will bump the minor part of a version, resetting patch, and prerelease to 0.
-- **patch**: Will bump the patch part of a version, resetting prerelease to 0.
-- **prerelease**: Will bump the prerelease part of a version.
+- **major**: Will bump the major `x.0.0` part of a version string.
+- **minor**: Will bump the minor `0.x.0` part of a version string.
+- **patch**: Will bump the patch `0.0.x` part of a version string.
+- **prerelease**: Will bump the prerelease `0.0.0-x` part of a version string.
 
 Version format: `major.minor.patch-prerelease`.
 
@@ -243,54 +248,15 @@ grunt bumpup:prerelease
 ## Usage Examples
 
 #### Release task
-In this example, we create a "release" task alias that handles everything needed to build a new project release:
+
+Example "release" task alias that handles everything needed to build a new project release:
 
 ```js
 // Task configurations
 grunt.initConfig({
+	pkg: grunt.file.readJSON('package.json'),
 	jshint: ...,
 	uglify: ...,
-	bumpup: 'package.json'
-});
-
-// Loading the plugins
-grunt.loadNpmTasks('grunt-contrib-jshint');
-grunt.loadNpmTasks('grunt-contrib-uglify');
-grunt.loadNpmTasks('grunt-bumpup');
-
-// Alias task for release
-grunt.registerTask('release', function (type) {
-	type = type ? type : 'patch';     // Set the release type
-	grunt.task.run('jshint');         // Lint stuff
-	grunt.task.run('uglify');         // Minify stuff
-	grunt.task.run('bumpup:' + type); // Bump up the version
-});
-```
-
-And now you can call it from CLI like this:
-
-```shell
-grunt release:minor
-```
-
-#### Updating config properties
-
-After bumpup executes, it updates the JSON properties that next tasks in queue might want to use.
-For example, if you have a `pkg` config property for easy access:
-
-```js
-grunt.initConfig({
-	pkg: grunt.file.readJSON('package.json')
-});
-```
-
-And you want to execute a task that uses this property immediately after it was bumped up, you have to tell Grunt that
-this property has been changed. bumpup does this automatically when you set up the `updateProps` option. When set up,
-this option will update properties that have just been bumped up. The example config than looks like this:
-
-```js
-grunt.initConfig({
-	pkg: grunt.file.readJSON('package.json'),
 	bumpup: {
 		options: {
 			updateProps: {
@@ -298,15 +264,29 @@ grunt.initConfig({
 			}
 		},
 		file: 'package.json'
-	}
+	},
+	tagrelease: '<%= pkg.version %>'
 });
 
-// Release task.
+// Loading the plugins
+grunt.loadNpmTasks('grunt-contrib-jshint');
+grunt.loadNpmTasks('grunt-contrib-uglify');
+grunt.loadNpmTasks('grunt-bumpup');
+grunt.loadNpmTasks('grunt-tagrelease');
+
+// Alias task for release
 grunt.registerTask('release', function (type) {
-	type = type ? type : 'patch';
-	grunt.task.run('jshint');
-	grunt.task.run('bumpup:' + type);
-	grunt.task.run('build');
-	grunt.task.run('tagrelease');
+	type = type ? type : 'patch';     // Default release type
+	grunt.task.run('jshint');         // Lint stuff
+	grunt.task.run('bumpup:' + type); // Bump up the version
+	grunt.task.run('uglify');         // Minify stuff
+	grunt.task.run('tagrelease');     // Commit & tag the release
 });
+```
+
+And now you can call it from CLI like this:
+
+```shell
+grunt release        // Default patch release
+grunt release:minor  // Minor release
 ```
