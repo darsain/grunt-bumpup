@@ -27,6 +27,36 @@ Once the plugin has been installed, it can be enabled inside your Gruntfile with
 grunt.loadNpmTasks('grunt-bumpup');
 ```
 
+## Usage
+
+You call this task from the CLI with one argument, specifying the release type:
+
+```js
+grunt bumpup:type
+```
+
+Available release types are:
+
+- **major**: Will bump the major `x.0.0` part of a version string.
+- **minor**: Will bump the minor `0.x.0` part of a version string.
+- **patch**: Will bump the patch `0.0.x` part of a version string.
+- **prerelease**: Will bump the prerelease `0.0.0-x` part of a version string.
+
+Version format: `major.minor.patch-prerelease`.
+
+The prerelease part is adjusted only when present. If you have a `1.0.0` version, the `-prerelease` part won't be appended unless
+already present, or you've called the task with `prerelease` argument:
+
+```shell
+grunt bumpup:prerelease
+```
+
+You can also pass a valid semantic version directly. Example:
+
+```
+grunt bumpup:1.1.0
+```
+
 ## Configuration
 
 In your project's Gruntfile, add a section named `bumpup` to the data object passed into `grunt.initConfig()`. This is a
@@ -195,10 +225,10 @@ other than default behavior.
 All setters receive the same 3 arguments:
 
 - **1st** *old* Old property value.
-- **2nd** *releaseType* Release type. Can be `major`, `minor`, `patch`, or `prerelease`.
+- **2nd** *releaseType* Release type. Can be `major`, `minor`, `patch`, `prerelease`, or a valid semantic version.
 - **3rd** *options* Options object, extended with default values.
 
-Example showcasing simplified build in `version` & `date` property setters:
+Example showcasing simplified `version` & `date` setters:
 
 ```js
 grunt.initConfig({
@@ -220,30 +250,6 @@ grunt.initConfig({
 
 Each setter has to return the new property value, or when something went wrong, `grunt.fail.warn()` an error and return
 `undefined`.
-
-## Usage
-
-You call this task from the CLI with one argument, specifying the release type:
-
-```js
-grunt bumpup:type
-```
-
-Available release types are:
-
-- **major**: Will bump the major `x.0.0` part of a version string.
-- **minor**: Will bump the minor `0.x.0` part of a version string.
-- **patch**: Will bump the patch `0.0.x` part of a version string.
-- **prerelease**: Will bump the prerelease `0.0.0-x` part of a version string.
-
-Version format: `major.minor.patch-prerelease`.
-
-The prerelease part is adjusted only when present. If you have a `1.0.0` version, the `-prerelease` part won't be appended unless
-already present, or you've called the task with `prerelease` argument:
-
-```shell
-grunt bumpup:prerelease
-```
 
 ## Usage Examples
 
