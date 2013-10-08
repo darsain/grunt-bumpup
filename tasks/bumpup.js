@@ -58,8 +58,8 @@ module.exports = function(grunt) {
 		// Normalize the release type
 		if (typeof releaseType === 'string') {
 			releaseType = releaseType.toLowerCase();
-			if (!/^(major|minor|patch|prerelease)$/i.test(releaseType)) {
-				failed(null, '"' + releaseType + '" is not a valid release type: major, minor, patch, or prerelease.');
+			if (!/^(major|minor|patch|prerelease)$/i.test(releaseType) && !semver.valid(releaseType)) {
+				failed(null, '"' + releaseType + '" is not a valid release type: major, minor, patch, prerelease, or a valid semver version.');
 				return;
 			}
 		} else {
@@ -90,12 +90,12 @@ module.exports = function(grunt) {
 					grunt.log.warn('Version "' + old + '" is not a valid semantic version.');
 					return;
 				} else {
-					return semver.inc(oldVersion, type);
+					return (semver.valid(type)) ? type : semver.inc(oldVersion, type);
 				}
 			},
 			date: function (old, type, o) {
 				return moment.utc().format(o.dateformat);
-			},
+			}
 		};
 		Object.keys(config.setters || {}).forEach(function (key) {
 			setters[key] = config.setters[key];
