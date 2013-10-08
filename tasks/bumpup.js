@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 		if (typeof releaseType === 'string') {
 			releaseType = releaseType.toLowerCase();
 			if (!/^(major|minor|patch|prerelease)$/i.test(releaseType) && !semver.valid(releaseType)) {
-				failed(null, '"' + releaseType + '" is not a valid release type: major, minor, patch, prerelease, or a valid semver version.');
+				failed(null, '"' + releaseType + '" is not a valid release type, or a semantic version.');
 				return;
 			}
 		} else {
@@ -85,12 +85,15 @@ module.exports = function(grunt) {
 		// Create an object of property setters
 		var setters = {
 			version: function (old, type) {
+				if (semver.valid(type)) {
+					return type;
+				}
 				var oldVersion = semver.valid(old);
 				if (!oldVersion) {
 					grunt.log.warn('Version "' + old + '" is not a valid semantic version.');
 					return;
 				} else {
-					return (semver.valid(type)) ? type : semver.inc(oldVersion, type);
+					return semver.inc(oldVersion, type);
 				}
 			},
 			date: function (old, type, o) {
