@@ -9,7 +9,7 @@ This is a [Grunt](http://gruntjs.com/) 0.4 plugin. If you haven't used [Grunt](h
 check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a
 [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins.
 
-### [Changelog](https://github.com/Darsain/grunt-bumpup/wiki/Changelog)
+### [Changelog](https://github.com/darsain/grunt-bumpup/wiki/Changelog)
 
 Upholds the [Semantic Versioning Specification](http://semver.org/).
 
