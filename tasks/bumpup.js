@@ -58,7 +58,7 @@ module.exports = function(grunt) {
 		// Normalize the release type
 		if (typeof releaseType === 'string') {
 			releaseType = releaseType.toLowerCase();
-			if (!/^(major|minor|patch|prerelease)$/i.test(releaseType) && !semver.valid(releaseType)) {
+			if (!/^(major|minor|patch|prerelease|build)$/i.test(releaseType) && !semver.valid(releaseType)) {
 				failed(null, '"' + releaseType + '" is not a valid release type, or a semantic version.');
 				return;
 			}
@@ -93,7 +93,15 @@ module.exports = function(grunt) {
 					grunt.log.warn('Version "' + old + '" is not a valid semantic version.');
 					return;
 				} else {
-					return semver.inc(oldVersion, type);
+					if (type === 'build') {
+						// strip previous build from oldVersion
+						var mainAndPre = oldVersion.split('+')[0],
+								build = grunt.config('build') || 'build0';
+						// add new build from config
+						return mainAndPre + '+' + build;
+					} else {
+						return semver.inc(oldVersion, type);
+					}
 				}
 			},
 			date: function (old, type, o) {
