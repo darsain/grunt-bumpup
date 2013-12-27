@@ -46,10 +46,12 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
 	// Registering the testing task.
-	grunt.registerTask('test', function (type) {
-		type = type ? type : 'patch';
+	grunt.registerTask('test', function (type, build) {
+		var bumpParts = ['bumpup'];
+		if (type) { bumpParts.push(type); }
+		if (build) { bumpParts.push(build); }
 		grunt.task.run('logver');
-		grunt.task.run('bumpup:' + type);
+		grunt.task.run(bumpParts.join(':'));
 		grunt.task.run('logver');
 	});
 

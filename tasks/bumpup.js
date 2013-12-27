@@ -54,11 +54,11 @@ module.exports = function(grunt) {
 	}
 
 	// Task definition
-	grunt.registerTask('bumpup', 'Bumping up version & date properties.', function (releaseType) {
+	grunt.registerTask('bumpup', 'Bumping up version & date properties.', function (releaseType, buildMeta) {
 		// Normalize the release type
 		if (typeof releaseType === 'string') {
 			releaseType = releaseType.toLowerCase();
-			if (!/^(major|minor|patch|prerelease)$/i.test(releaseType) && !semver.valid(releaseType)) {
+			if (!/^(major|minor|patch|prerelease|build)$/i.test(releaseType) && !semver.valid(releaseType)) {
 				failed(null, '"' + releaseType + '" is not a valid release type, or a semantic version.');
 				return;
 			}
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
 
 		// Create an object of property setters
 		var setters = {
-			version: function (old, type) {
+			version: function (old, type, o, buildMeta) {
 				if (semver.valid(type)) {
 					return type;
 				}
@@ -92,9 +92,12 @@ module.exports = function(grunt) {
 				if (!oldVersion) {
 					grunt.log.warn('Version "' + old + '" is not a valid semantic version.');
 					return;
-				} else {
-					return semver.inc(oldVersion, type);
 				}
+				var newVersion = type !== 'build' ? semver.inc(oldVersion, type) : oldVersion;
+				if (buildMeta) {
+					newVersion += '+' + buildMeta;
+				}
+				return newVersion;
 			},
 			date: function (old, type, o) {
 				return moment.utc().format(o.dateformat);
@@ -137,7 +140,7 @@ module.exports = function(grunt) {
 					if (o.normalize && norm[key] != null) {
 						newValue = norm[key];
 					} else {
-						norm[key] = newValue = setters[key](meta[key], releaseType, o);
+						norm[key] = newValue = setters[key](meta[key], releaseType, o, buildMeta);
 					}
 
 					if (newValue != null) {

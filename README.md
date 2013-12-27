@@ -29,10 +29,22 @@ grunt.loadNpmTasks('grunt-bumpup');
 
 ## Usage
 
-You call this task from the CLI with one argument, specifying the release type:
+```js
+grunt bumpup
+```
+
+By default, the *patch* version is bumped.
+
+You can specify a different release type bump in 1st argument:
 
 ```js
-grunt bumpup:type
+grunt bumpup:[type]
+```
+
+And the build meta suffix in 2nd argument:
+
+```js
+grunt bumpup:[type]:[buildmeta]
 ```
 
 Available release types are:
@@ -41,20 +53,22 @@ Available release types are:
 - **minor**: Will bump the minor `0.x.0` part of a version string.
 - **patch**: Will bump the patch `0.0.x` part of a version string.
 - **prerelease**: Will bump the prerelease `0.0.0-x` part of a version string.
+- **build**: Tells bumpup that you are changing only the buildmeta suffix and nothing else should be modified.
 
-Version format: `major.minor.patch-prerelease`.
+Full possible version format: `major.minor.patch-prerelease+buildmeta`
 
-The prerelease part is adjusted only when present. If you have a `1.0.0` version, the `-prerelease` part won't be appended unless
-already present, or you've called the task with `prerelease` argument:
+The prerelease part is appended only in **prerelease** bump type, and removed when present in **major**, **minor**, or **patch** bumps.
+
+The `buildmeta` suffix has to be passed manually:
 
 ```shell
-grunt bumpup:prerelease
+grunt bumpup:[type]:1458
 ```
 
-You can also pass a valid semantic version directly. Example:
+You can also ignore everything above and pass a valid semantic version directly:
 
 ```
-grunt bumpup:1.1.0
+grunt bumpup:1.1.0-2+1458
 ```
 
 ## Configuration
@@ -208,7 +222,7 @@ update the `timestamp` property inside `package.json`:
 grunt.initConfig({
 	bumpup: {
 		setters: {
-			timestamp: function (oldTimestamp, releaseType, options) {
+			timestamp: function (oldTimestamp, releaseType, options, buildMeta) {
 				return +new Date();
 			}
 		},
@@ -222,11 +236,12 @@ other than default behavior.
 
 ### Setter arguments
 
-All setters receive the same 3 arguments:
+All setters receive the same 4 arguments:
 
-- **1st** *old* Old property value.
-- **2nd** *releaseType* Release type. Can be `major`, `minor`, `patch`, `prerelease`, or a valid semantic version.
-- **3rd** *options* Options object, extended with default values.
+- *1st* **old** Old property value.
+- *2nd* **releaseType** Release type. Can be `major`, `minor`, `patch`, `prerelease`, or a valid semantic version.
+- *3rd* **options** Options object, extended with default values.
+- *4th* **buildMeta** Build meta suffix (when passed in 2nd task argument).
 
 Example showcasing simplified `version` & `date` setters:
 
@@ -234,10 +249,10 @@ Example showcasing simplified `version` & `date` setters:
 grunt.initConfig({
 	bumpup: {
 		setters: {
-			version: function (oldVersion, releaseType, options) {
-				return semver.inc(oldVersion, releaseType);
+			version: function (oldVersion, releaseType, options, buildMeta) {
+				return semver.inc(oldVersion, releaseType) + '+' + buildMeta;
 			},
-			date: function (oldDate, releaseType, options) {
+			date: function (oldDate, releaseType, options, buildMeta) {
 				return moment.utc().format(options.dateformat);
 			}
 		},
