@@ -303,11 +303,24 @@ grunt.registerTask('release', function (type) {
 	grunt.task.run('uglify');         // Minify stuff
 	grunt.task.run('tagrelease');     // Commit & tag the release
 });
+
+// Alias task for release with buildmeta suffix support
+grunt.registerTask('release', function (type, build) {
+	var bumpParts = ['bumpup'];
+	if (type) { bumpParts.push(type); }
+	if (build) { bumpParts.push(build); }
+	grunt.task.run('jshint');
+	grunt.task.run(bumpParts.join(':'));
+	grunt.task.run('uglify');
+	grunt.task.run('tagrelease');
+});
 ```
 
 And now you can call it from CLI like this:
 
 ```shell
-grunt release        // Default patch release
-grunt release:minor  // Minor release
+grunt release            // Default patch release
+grunt release:minor      // Minor release
+grunt release:minor:1458 // Minor release with buildtype suffix
+grunt release:build:1459 // Only build suffix will be modified
 ```
