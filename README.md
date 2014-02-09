@@ -1,5 +1,7 @@
 # grunt-bumpup [![NPM version](https://badge.fury.io/js/grunt-bumpup.png)](https://npmjs.org/package/grunt-bumpup)
 
+**This plugin is being deprecated in favor of [grunt-bump](https://npmjs.org/package/grunt-bump), and will be eventually unpublished. Please migrate.**
+
 Updates the `version`, `date`, and other properties in your JSON files.
 
 The properties are updated only when already present in the original JSON file. Plugin also detects and preserves the

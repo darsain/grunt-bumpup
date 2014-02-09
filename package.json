@@ -1,7 +1,7 @@
 {
 	"name": "grunt-bumpup",
-	"description": "Update the version, date, and other properties in JSON files while preserving the original indentation style.",
-	"version": "0.5.0",
+	"description": "This plugin is being deprecated in favor of grunt-bump, and will be eventually unpublished. Please migrate.",
+	"version": "0.5.1",
 	"homepage": "https://github.com/darsain/grunt-bumpup",
 	"author": {
 		"name": "Darsain",
@@ -37,8 +37,5 @@
 	},
 	"peerDependencies": {
 		"grunt": "~0.4.1"
-	},
-	"keywords": [
-		"gruntplugin"
-	]
+	}
 }
