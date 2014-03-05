@@ -1,11 +1,11 @@
 # grunt-bumpup [![NPM version](https://badge.fury.io/js/grunt-bumpup.png)](https://npmjs.org/package/grunt-bumpup)
 
-**This plugin is being deprecated in favor of [grunt-bump](https://npmjs.org/package/grunt-bump), and will be eventually unpublished. Please migrate.**
-
 Updates the `version`, `date`, and other properties in your JSON files.
 
 The properties are updated only when already present in the original JSON file. Plugin also detects and preserves the
 original indentation style.
+
+> **Note:** if you want to create tag, commit, or push to a git repository in addition to bumping version, please consider [grunt-bump](https://npmjs.org/package/grunt-bump).
 
 This is a [Grunt](http://gruntjs.com/) 0.4 plugin. If you haven't used [Grunt](http://gruntjs.com/) before, be sure to
 check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a

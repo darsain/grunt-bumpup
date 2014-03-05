@@ -55,7 +55,6 @@ module.exports = function(grunt) {
 
 	// Task definition
 	grunt.registerTask('bumpup', 'Bumping up version & date properties.', function (releaseType, buildMeta) {
-		grunt.log.warn('grunt-bumpup is being deprecated in favor of grunt-bump. Please migrate.');
 		// Normalize the release type
 		if (typeof releaseType === 'string') {
 			releaseType = releaseType.toLowerCase();

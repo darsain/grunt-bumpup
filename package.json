@@ -1,12 +1,24 @@
 {
 	"name": "grunt-bumpup",
-	"description": "This plugin is being deprecated in favor of grunt-bump, and will be eventually unpublished. Please migrate.",
-	"version": "0.5.1",
+	"description": "Update the version, date, and other properties in JSON files while preserving the original indentation style.",
+	"version": "0.5.2",
+	"keywords": [
+		"gruntplugin",
+		"bump",
+		"semver",
+		"version"
+	],
 	"homepage": "https://github.com/darsain/grunt-bumpup",
 	"author": {
 		"name": "Darsain",
 		"url": "http://darsa.in"
 	},
+	"contributors": [
+		{
+			"name": "leny",
+			"url": "http://leny.me"
+		}
+	],
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/darsain/grunt-bumpup.git"
