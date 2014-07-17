@@ -17,7 +17,23 @@
 		{
 			"name": "leny",
 			"url": "http://leny.me"
-		}
+		},
+    {
+      "name": "whitcomb",
+      "url": "http://bradwhitcomb.com"
+    },
+    {
+      "name": "maxbeatty",
+      "url": "http://about.me/max"
+    },
+    {
+      "name": "at0g",
+      "url": "https://github.com/at0g"
+    },
+    {
+      "name": "sgtpepper43",
+      "url": "http://trevorfenn.info"
+    }
 	],
 	"repository": {
 		"type": "git",
