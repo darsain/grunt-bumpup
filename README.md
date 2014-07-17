@@ -53,8 +53,11 @@ Available release types are:
 
 - **major**: Will bump the major `x.0.0` part of a version string.
 - **minor**: Will bump the minor `0.x.0` part of a version string.
-- **patch**: Will bump the patch `0.0.x` part of a version string.
-- **prerelease**: Will bump the prerelease `0.0.0-x` part of a version string.
+- **patch**: Will bump the patch `0.0.x` part of a version string. If a prerelease exists, will only remove the prerelease number.
+- **premajor**: Will bump the major `x.0.0` part of a version strring and append a prerelease version of 0 `0.0.0-x'`
+- **preminor**: Will bump the minor `0.x.x` part of a version strring and append a prerelease version of 0 `0.0.0-x'`
+- **prepatch**: Will bump the patch `0.0.x` part of a version strring and append a prerelease version of 0 `0.0.0-x'`
+- **prerelease**: Will bump the prerelease `0.0.0-x` part of a version string. If no prerelease exists, will also bump the patch `0.0.x`
 - **build**: Tells bumpup that you are changing only the buildmeta suffix and nothing else should be modified.
 
 Full possible version format: `major.minor.patch-prerelease+buildmeta`
