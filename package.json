@@ -41,7 +41,7 @@
 	},
 	"dependencies": {
 		"moment": "~2.2.1",
-		"semver": "~2.1.0"
+		"semver": "~2.3.0"
 	},
 	"devDependencies": {
 		"grunt-contrib-jshint": "~0.6.4",
