@@ -58,7 +58,7 @@ module.exports = function(grunt) {
 		// Normalize the release type
 		if (typeof releaseType === 'string') {
 			releaseType = releaseType.toLowerCase();
-			if (!/^(major|minor|patch|prerelease|build)$/i.test(releaseType) && !semver.valid(releaseType)) {
+			if (!/^(major|minor|patch|prerelease|premajor|preminor|prepatch|build)$/i.test(releaseType) && !semver.valid(releaseType)) {
 				failed(null, '"' + releaseType + '" is not a valid release type, or a semantic version.');
 				return;
 			}
