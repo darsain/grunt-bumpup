@@ -73,6 +73,7 @@ module.exports = function(grunt) {
 		var o = grunt.util._.extend({
 			dateformat: 'YYYY-MM-DD HH:mm:ss Z',
 			normalize: true,
+			newlineEof: false,
 			updateProps: {}
 		}, config.options || {});
 		var norm = {};
@@ -150,7 +151,7 @@ module.exports = function(grunt) {
 				});
 
 				// Stringify new metafile and save
-				if (!grunt.file.write(filepath, JSON.stringify(meta, null, indentation))) {
+				if (!grunt.file.write(filepath, JSON.stringify(meta, null, indentation) + (o.newlineEof ? "\n" : ''))) {
 					grunt.log.warn('Couldn\'t write to "' + filepath + '"');
 				}
 
