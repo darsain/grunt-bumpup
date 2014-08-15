@@ -192,6 +192,12 @@ Default: `true`
 Whether to normalize all JSON files to have the same version. The version that is than bumped up and saved into all
 files is taken from the first file passed into the files array.
 
+#### options.newlineEof
+Type: `Boolean`
+Default: `false`
+
+Whether to add a newline at the end when writing a JSON file.
+
 #### options.dateformat
 Type: `String`
 Default: `YYYY-MM-DD HH:mm:ss Z`
