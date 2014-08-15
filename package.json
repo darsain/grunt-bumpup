@@ -1,7 +1,7 @@
 {
 	"name": "grunt-bumpup",
 	"description": "Update the version, date, and other properties in JSON files while preserving the original indentation style.",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"keywords": [
 		"gruntplugin",
 		"bump",
@@ -33,6 +33,10 @@
     {
       "name": "sgtpepper43",
       "url": "http://trevorfenn.info"
+    },
+    {
+      "name": "maff",
+      "url": "https://github.com/maff"
     }
 	],
 	"repository": {
