@@ -1,7 +1,7 @@
 {
   "name": "grunt-bumpup",
   "description": "Update the version, date, and other properties in JSON files while preserving the original indentation style.",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "keywords": [
     "gruntplugin",
     "bump",
